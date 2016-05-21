@@ -6,5 +6,10 @@
     "zendframework/zend-json": ">=2.4"
   },
   "repositories":[
-  ]
+  ],
+  "autoload": {
+    "psr-4": {
+      "JqGridBackend\\": "src/"
+    }
+  }
 }
