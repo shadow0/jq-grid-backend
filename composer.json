@@ -3,7 +3,8 @@
   "description": "Jqgrid backend module for ZF2",
   "require": {
     "php": ">=5.5",
-    "zendframework/zend-json": ">=2.4"
+    "zendframework/zend-json": ">=2.4",
+    "zendframework/zend-form": ">=2.4"
   },
   "repositories":[
   ],
