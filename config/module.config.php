@@ -50,8 +50,6 @@ return array(
     ),
     'view_manager' => array(
 		'template_map' => array(
-			//FIXME почему-то переопределяет глобально для всех модулей?
-			//'layout/layout' => __DIR__ . '/../view/layout/layout.phtml'
 		),
 		'template_path_stack' => array(
 			'jqgridbackend' => __DIR__ . '/../view',

@@ -284,7 +284,8 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
         $renderer = new PhpRenderer();
         $resolver = new AggregateResolver();
         $renderer->setResolver($resolver);
-        $path = __DIR__ . '/../../../../../view';
+        //TODO необходимо правильно определять путь к темплетам
+        $path = __DIR__ . '/../../../../view';
 
         $stack = new TemplatePathStack(array(
             'script_paths' => array(
