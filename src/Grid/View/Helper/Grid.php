@@ -14,9 +14,10 @@ use Zend\ServiceManager\ServiceLocatorAwareTrait;
 use Zend\View\Helper\AbstractHelper;
 use Zend\Form\FieldsetInterface as GridObject;
 use Zend\ServiceManager\AbstractPluginManager;
-use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactoryInterface;
-use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactory;
+//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactoryInterface;
+//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactory;
 use JqGridBackend\Grid\View\Helper\Grid\GridObjectAwareInterface;
+use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManagerInterface;
 use JqGridBackend\Exception;
 use Zend\Json\Expr as JsonExpr;
 
@@ -35,6 +36,8 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
      */
     protected $config;
 
+    protected $adapterMapConfig;
+
 //    /**
 //     * @var GridObject
 //     */
@@ -51,13 +54,20 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
     protected $template = 'grid/index';
 
     /**
-     * @var ColModelAdapterFactory
+     * @var ColModelAdapterPluginManagerInterface
      */
-    private $colModelAdapterFactory;
+    protected $colModelAdapterPluginManager;
 
-    public function __construct()
+//    /**
+//     * @var ColModelAdapterFactory
+//     */
+//    private $colModelAdapterFactory;
+
+    public function __construct($colModelAdapterPluginManager, $config)
     {
-        $a = 1;
+        $this->config = $config;
+        $this->setColModelAdapterPluginManager($colModelAdapterPluginManager);
+        $this->adapterMapConfig = $this->getConfig('adapterMap');
     }
 
     /**
@@ -152,18 +162,27 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
         $colModel = array();
         /** @var FormElement $column */
         foreach ($obj as $column) {
-            $colModel[] = $this->getColModelItem($column);
+            $adapter = $this->getColModelAdapter($column);
+            $colModel[] = $adapter($column);
+//            $colModel[] = $this->getColModelItem($column);
         }
         return $colModel;
     }
 
-    protected function getColModelItem(FormElement $column) {
-        /** @var ColModelAdapterFactory $colModelAdapterFactory */
-        $colModelAdapterFactory = $this->getColModelAdapterFactory();
-
+    /**
+     * get column adapter from column object
+     * @param FormElement $column
+     * @return ColModel\ColModelAdapter
+     */
+    protected function getColModelAdapter(FormElement $column)
+    {
+        /** @var string $adapterName */
+        $adapterName = $this->getAdapterName($column);
+        /** @var ColModelAdapterPluginManagerInterface $adapterPM */
+        $adapterPM = $this->getColModelAdapterPluginManager();
         /** @var ColModel\ColModelAdapter $colModelAdapter */
-        $colModelAdapter = $colModelAdapterFactory->getAdapter($column);
-        return $colModelAdapter($column);
+        $colModelAdapter = $adapterPM->get($adapterName);
+        return $colModelAdapter;
     }
 
     private function getDefaultOptions(GridObject $obj, $optionsKey = 'default')
@@ -182,14 +201,6 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
                 $v->setGridObject($obj);
             }
             $ret[$k] = $v;
-//            switch ($k) {
-//                case 'pager':
-//                    //TODO getName() делает хелпер нереентерабельным, изменить алгоритм имени pager
-//                    $ret[$k] = $v . $this->getName();
-//                    break;
-//                default:
-//                    $ret[$k] = $v;
-//            }
         }
 
         return $ret;
@@ -239,24 +250,6 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
 
         return $ret;
     }
-
-//    /**
-//     * @return GridObject
-//     */
-//    public function getGridObj()
-//    {
-//        return $this->gridObj;
-//    }
-//
-//    /**
-//     * @param GridObject $gridObj
-//     * @return self
-//     */
-//    public function setGridObj($gridObj)
-//    {
-//        $this->gridObj = $gridObj;
-//        return $this;
-//    }
 
     /**
      * @return string
@@ -315,33 +308,12 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
         return $this;
     }
 
-    /**
-     * @return ColModelAdapterFactory
-     */
-    protected function getColModelAdapterFactory()
-    {
-        if ( ! $this->colModelAdapterFactory) {
-            $sm = $this->getParentServiceLocator();
-            /** @var ColModelAdapterFactory $colModelAdapterFactory */
-            $this->colModelAdapterFactory = $sm->get(ColModelAdapterFactoryInterface::class);
-        }
-        return $this->colModelAdapterFactory;
-    }
 
     /**
      * @return array
      */
     protected function getConfig($key)
     {
-        if (!$this->config) {
-            $sm = $this->getParentServiceLocator();
-            $config = $sm->get('config');
-            if (array_key_exists('JqGridBackend', $config) == false) {
-                throw new Exception\InvalidArgumentException('missing config section JqGridBackend');
-            }
-            $this->config = $config['JqGridBackend'];
-        }
-
         if (array_key_exists($key, $this->config) == false) {
             return null;
         }
@@ -388,4 +360,40 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
         return $subgridHelper;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getColModelAdapterPluginManager()
+    {
+        return $this->colModelAdapterPluginManager;
+    }
+
+    /**
+     * @param mixed $colModelAdapterPluginManager
+     * @return self
+     */
+    public function setColModelAdapterPluginManager($colModelAdapterPluginManager)
+    {
+        $this->colModelAdapterPluginManager = $colModelAdapterPluginManager;
+        return $this;
+    }
+
+    /**
+     * @param FormElement $element
+     * @return string
+     * @thrown Exception\OutOfBoundsException
+     */
+    public function getAdapterName(FormElement $element)
+    {
+        $adapterName = null;
+        foreach ($this->adapterMapConfig as $k => $v) {
+            if (is_a($element, $k) == true) {
+                $adapterName = $v;
+            }
+        }
+        if (!$adapterName) {
+            throw new Exception\OutOfBoundsException("missing ColModelAdapter for class = ". get_class($element));
+        }
+        return $adapterName;
+    }
 }

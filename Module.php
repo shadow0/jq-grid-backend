@@ -1,21 +1,30 @@
 <?php
 namespace JqGridBackend;
 
-use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-use Zend\ModuleManager\Feature\ConfigProviderInterface;
+use Zend\ModuleManager\ModuleManager;
+use Zend\ModuleManager\ModuleManagerInterface;
+use Zend\ModuleManager\Listener\ServiceListenerInterface;
+use Zend\ModuleManager\Feature;
+//use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
+//use Zend\ModuleManager\Feature\ConfigProviderInterface;
+//use Zend\ModuleManager\Feature\InitProviderInterface;
 use JqGridBackend\Grid\View\Helper\Grid as GridHelper;
 use JqGridBackend\Grid\View\Helper\ColModel as ColModel;
 
-use JqGridBackend\Grid\View\Helper\ColModel\TextAdapter;
-use JqGridBackend\Grid\View\Helper\ColModel\SelectAdapter;
+//use JqGridBackend\Grid\View\Helper\ColModel\TextAdapter;
+//use JqGridBackend\Grid\View\Helper\ColModel\SelectAdapter;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactory;
-use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactoryInterface;
+//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactory;
+//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactoryInterface;
 use JqGridBackend\Exception\InvalidArgumentException;
+use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManagerInterface;
+use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManager;
+use JqGridBackend\Grid\View\Helper\ColModelProviderInterface;
 
 class Module implements
-    AutoloaderProviderInterface,
-    ConfigProviderInterface
+    Feature\AutoloaderProviderInterface,
+    Feature\ConfigProviderInterface,
+    Feature\InitProviderInterface
 {
 	public function getAutoloaderConfig()
 	{
@@ -47,14 +56,48 @@ class Module implements
                     $ret = new ColModelAdapterFactory($serviceManager, $config['JqGridBackend']);
                     return $ret;
                 },
-                TextAdapter::class => function ($serviceManager) {
-                    return new TextAdapter();
+                ColModel\TextAdapter::class => function ($serviceManager) {
+                    return new ColModel\TextAdapter();
                 },
-                SelectAdapter::class => function ($serviceManager) {
-                    return new SelectAdapter();
+                ColModel\SelectAdapter::class => function ($serviceManager) {
+                    return new ColModel\SelectAdapter();
                 },
             ]
 		];
 	}
 
+    /**
+     * @param ModuleManagerInterface $manager
+     *
+     * @throws Exception\InvalidArgumentException
+     * @throws \Zend\ServiceManager\Exception\ServiceNotFoundException
+     */
+    public function init(ModuleManagerInterface $manager)
+    {
+        if (!$manager instanceof ModuleManager) {
+            $errMsg = sprintf('Module manager not implement %s', ModuleManager::class);
+            throw new Exception\InvalidArgumentException($errMsg);
+        }
+
+        /** @var ServiceLocatorInterface $sm */
+        $sm = $manager->getEvent()->getParam('ServiceManager');
+
+        if (!$sm instanceof ServiceLocatorInterface) {
+            $errMsg = sprintf('Service locator not implement %s', ServiceLocatorInterface::class);
+            throw new Exception\InvalidArgumentException($errMsg);
+        }
+        /** @var ServiceListenerInterface $serviceListener */
+        $serviceListener = $sm->get('ServiceListener');
+        if (!$serviceListener instanceof ServiceListenerInterface) {
+            $errMsg = sprintf('ServiceListener not implement %s', ServiceListenerInterface::class);
+            throw new Exception\InvalidArgumentException($errMsg);
+        }
+
+        $serviceListener->addServiceManager(
+            ColModelAdapterPluginManagerInterface::class,
+            ColModelAdapterPluginManager::CONFIG_KEY,
+            ColModelProviderInterface::class,
+            'getColModelConfig'
+        );
+    }
 }

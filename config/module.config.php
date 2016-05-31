@@ -7,10 +7,29 @@ use Zend\Form\FieldsetInterface;
 use JqGridBackend\Grid\View\Helper\ColModel;
 //use JqGridBackend\Grid\View\Helper\Grid\SubgridPagerId;
 
+use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManagerInterface;
+use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManager;
+
 return array(
     'view_helpers' => [
-        'invokables' => [
-            'jqGrid' => Grid::class,
+        'aliases' => [
+            'jqGrid' => Grid::class
+        ],
+//        'invokables' => [
+//            'jqGrid' => Grid::class,
+//        ],
+        'factories' => [
+            Grid::class => function ($serviceManager) {
+                $configKey = 'JqGridBackend';
+                $parentServiceLocator = $serviceManager->getServiceLocator();
+                $config = $parentServiceLocator->get('config');
+
+                if (array_key_exists($configKey, $config) == false) {
+                    throw new \InvalidArgumentException('missing config section JqGridBackend');
+                }
+                $colModelPM = $parentServiceLocator->get(ColModelAdapterPluginManagerInterface::class);
+                return new Grid($colModelPM, $config[$configKey]);
+            }
         ]
     ],
     'controllers' => array(
@@ -57,22 +76,6 @@ return array(
 		'strategies' => array(
             'ViewJsonStrategy',
         ),
-	),
-	'doctrine' => array(
-		'driver' => array(
-			__NAMESPACE__ . '_driver' => array(
-				'class' => 'Doctrine\ORM\Mapping\Driver\AnnotationDriver',
-				'cache' => 'array',
-				'paths' => array(
-					__DIR__ . '/../src/' . __NAMESPACE__ . '/Entity'
-				)
-			),
-			'orm_default' => array(
-				'drivers' => array(
-					__NAMESPACE__ . '\Entity' => __NAMESPACE__ . '_driver'
-				)
-			)
-		)
 	),
     'JqGridBackend' => [
         'subgrid' => [
@@ -147,6 +150,35 @@ return array(
                 ]
             ]
         ]
+    ],
+//    'jqgrid_adapter_config' => [
+//        'map' => [
+//            /**
+//             * map from element class-name to adapter class-name.
+//             * There will be compare if form element class is_a() map-key, and will take
+//             * the last from the successfull comparison
+//             */
+//            FormElement\Text::class => ColModel\TextAdapter::class,
+//            FormElement\Select::class => ColModel\SelectAdapter::class,
+//        ],
+//        'invokables' => [
+//            ColModel\TextAdapter::class => ColModel\TextAdapter::class,
+//            ColModel\SelectAdapter::class => ColModel\SelectAdapter::class,
+//        ],
+//    ],
+	'service_manager' => [
+        'invokables' => [
+            ColModelAdapterPluginManagerInterface::class => ColModelAdapterPluginManager::class
+        ]
+    ],
+    'jqgrid_adapter_manager' => [
+//        'aliases' => [
+//            FormElement\Text::class => ColModel\TextAdapter::class,
+//            FormElement\Select::class => ColModel\SelectAdapter::class,
+//        ],
+        'invokables' => [
+            ColModel\TextAdapter::class => ColModel\TextAdapter::class,
+            ColModel\SelectAdapter::class => ColModel\SelectAdapter::class,
+        ],
     ]
-	 
 );
