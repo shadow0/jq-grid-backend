@@ -274,19 +274,8 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
      */
     private function getRenderer()
     {
-        $renderer = new PhpRenderer();
-        $resolver = new AggregateResolver();
-        $renderer->setResolver($resolver);
-        //TODO необходимо правильно определять путь к темплетам
-        $path = __DIR__ . '/../../../../view';
-
-        $stack = new TemplatePathStack(array(
-            'script_paths' => array(
-                $path,
-                //$someOtherPath
-            )
-        ));
-        $resolver->attach($stack);
+        $renderer = clone $this->getView();
+        $renderer->setVars([]);
         return $renderer;
     }
 

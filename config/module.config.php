@@ -15,9 +15,6 @@ return array(
         'aliases' => [
             'jqGrid' => Grid::class
         ],
-//        'invokables' => [
-//            'jqGrid' => Grid::class,
-//        ],
         'factories' => [
             Grid::class => function ($serviceManager) {
                 $configKey = 'JqGridBackend';
@@ -32,41 +29,6 @@ return array(
             }
         ]
     ],
-    'controllers' => array(
-		'invokables' => array(
-			'JqGridBackend\Controller\Index' => 'JqGridBackend\Controller\IndexController',
-		),
-	),
-	'router' => array(
-        'routes' => array(
-            'JqGridBackend' => array(
-				'type' => 'Segment',
-				'options' => array(
-					'route' => '/jqgridbackend',
-					'defaults' => array(
-						'__NAMESPACE__' => 'JqGridBackend\Controller',
-						'controller' => 'Index',
-						'action' => 'index',
-					),
-				),
-				'may_terminate' => true,
-				'child_routes' => array(
-					'default' => array(
-						'type' => 'Segment',
-						'options' => array(
-							'route' => '/[:controller[/[:action]]]',
-							'constraints' => array(
-								'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-								'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-							),
-							'defaults' => array(
-							),
-						),
-					),
-				),
-			),
-		),
-    ),
     'view_manager' => array(
 		'template_map' => array(
 		),
@@ -151,31 +113,12 @@ return array(
             ]
         ]
     ],
-//    'jqgrid_adapter_config' => [
-//        'map' => [
-//            /**
-//             * map from element class-name to adapter class-name.
-//             * There will be compare if form element class is_a() map-key, and will take
-//             * the last from the successfull comparison
-//             */
-//            FormElement\Text::class => ColModel\TextAdapter::class,
-//            FormElement\Select::class => ColModel\SelectAdapter::class,
-//        ],
-//        'invokables' => [
-//            ColModel\TextAdapter::class => ColModel\TextAdapter::class,
-//            ColModel\SelectAdapter::class => ColModel\SelectAdapter::class,
-//        ],
-//    ],
 	'service_manager' => [
         'invokables' => [
             ColModelAdapterPluginManagerInterface::class => ColModelAdapterPluginManager::class
         ]
     ],
     'jqgrid_adapter_manager' => [
-//        'aliases' => [
-//            FormElement\Text::class => ColModel\TextAdapter::class,
-//            FormElement\Select::class => ColModel\SelectAdapter::class,
-//        ],
         'invokables' => [
             ColModel\TextAdapter::class => ColModel\TextAdapter::class,
             ColModel\SelectAdapter::class => ColModel\SelectAdapter::class,
