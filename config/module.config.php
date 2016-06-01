@@ -54,7 +54,7 @@ return array(
         ],
         'subgridMap' => [
             /**
-             * what helper use for subgrid
+             * what  helper use for subgrid
              */
             FieldsetInterface::class => Grid::class
         ],
