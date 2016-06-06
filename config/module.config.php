@@ -27,6 +27,9 @@ return array(
                 $colModelPM = $parentServiceLocator->get(ColModelAdapterPluginManagerInterface::class);
                 return new Grid($colModelPM, $config[$configKey]);
             }
+        ],
+        'shared' => [
+            Grid::class => false,
         ]
     ],
     'view_manager' => array(
@@ -39,7 +42,7 @@ return array(
             'ViewJsonStrategy',
         ),
 	),
-    'JqGridBackend' => [
+    'oldJqGridBackend' => [
         'subgrid' => [
             'template' => 'grid/subgrid',
         ],
@@ -112,6 +115,72 @@ return array(
                 ]
             ]
         ]
+    ],
+    'JqGridBackend' => [
+        'adapterMap' => [
+            /**
+             * map from element class-name to adapter class-name.
+             * There will be compare if form element class is_a() map-key, and will take
+             * the last from the successfull comparison
+             */
+            FormElement\Text::class => ColModel\TextAdapter::class,
+            FormElement\Select::class => ColModel\SelectAdapter::class,
+        ],
+        'subgridMap' => [
+            /**
+             * what  helper use for subgrid
+             */
+            FieldsetInterface::class => Grid::class
+        ],
+        'default' => [
+            'template' => 'grid/index',
+            'options' => [
+                'url' => null,
+                'datatype' => 'json',
+                'multiSort' => true,
+                'rowNum' => 10,
+                'rowList' => [10,20,30],
+                'pager' => new Grid\GridPagerId('GridPager-'),
+                'viewrecords' => true,
+                'caption' =>  'Тестовый грид',
+
+
+            ],
+            'methods' => [
+                /**
+                 * key - method name,
+                 * value - array of parameters (will be transformed to json)
+                 */
+                'filterToolbar' =>  [
+                    'filterToolbar',
+                    [
+                        "searchOnEnter" => true,
+                        "enableClear" => false
+                    ]
+                ]
+            ]
+        ],
+        'subgrid' => [
+            'template' => 'grid/subgrid',
+            'options' => [
+                'datatype' => 'json',
+                'multiSort' => true,
+                'rowNum' => 20,
+                'rowList' => [10,20,30],
+                'pager' => new Grid\SubgridPagerId('GridPager-'),
+                'viewrecords' => true,
+                'caption' =>  'Тестовый грид'
+            ],
+            'methods' => [
+                'filterToolbar' =>  [
+                    'filterToolbar',
+                    [
+                        "searchOnEnter" => true,
+                        "enableClear" => false
+                    ]
+                ],
+            ]
+        ],
     ],
 	'service_manager' => [
         'invokables' => [
