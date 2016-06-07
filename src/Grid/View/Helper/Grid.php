@@ -14,8 +14,6 @@ use Zend\ServiceManager\ServiceLocatorAwareTrait;
 use Zend\View\Helper\AbstractHelper;
 use Zend\Form\FieldsetInterface as GridObject;
 use Zend\ServiceManager\AbstractPluginManager;
-//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactoryInterface;
-//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactory;
 use JqGridBackend\Grid\View\Helper\Grid\GridObjectAwareInterface;
 use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManagerInterface;
 use JqGridBackend\Exception;
@@ -23,8 +21,6 @@ use Zend\Json\Expr as JsonExpr;
 
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\PhpRenderer;
-use Zend\View\Resolver\AggregateResolver;
-use Zend\View\Resolver\TemplatePathStack;
 use Zend\Form\Element as FormElement;
 
 class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
@@ -44,10 +40,26 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
     protected $name;
 
     /**
+     * @var GridObject
+     */
+    protected $obj;
+
+    /**
      * default configuration name
      * @var string
      */
     protected $configName = 'default';
+
+    /**
+     * cumulative grid options
+     * @var array
+     */
+    protected $gridOptions;
+
+    /**
+     * @var array
+     */
+    protected $gridMethods = [];
 
     /**
      * @var ColModelAdapterPluginManagerInterface
@@ -58,7 +70,7 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
     {
         $this->config = $config;
         $this->setColModelAdapterPluginManager($colModelAdapterPluginManager);
-        $this->adapterMapConfig = $this->getConfig('adapterMap');
+        $this->adapterMapConfig = $this->getConfigKey('adapterMap');
     }
 
     /**
@@ -91,7 +103,14 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
             }
         }
 
+        $this->setObj($obj);
         $this->setName($obj->getName());
+        //NB override configName if defined in object
+        if (($configName = $obj->getOption('gridConfigName')) != null) {
+            $this->setConfigName($configName);
+        }
+        $this->setGridOptions($obj);
+        $this->setGridMethods($obj);
 
         $renderer = $this->getRenderer();
         $viewModel = new ViewModel([
@@ -104,8 +123,9 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
 
     }
 
-    public function getBody(GridObject $obj)
+    public function getBody()
     {
+        $obj = $this->getObj();
         $ret = array_merge(
             $this->getGridOptions($obj),
             [
@@ -116,30 +136,6 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
         return $ret;
     }
 
-    public function getGridMethods(GridObject $obj)
-    {
-        $gridOptions = $this->getGridOptions($obj);
-        $configKey = $this->getGridConfigKey($gridOptions);
-        $gridMethods = $this->getDefaultMethods($configKey);
-
-        if (array_key_exists('_gridMethods_', $gridOptions)) {
-            $gridMethods = array_merge_recursive($gridMethods, $gridOptions['_gridMethods_']);
-        }
-        return $gridMethods;
-    }
-
-    /**
-     * return merge the default and user options for grid
-     * @param GridObject $obj
-     * @return array
-     */
-    public function getGridOptions(GridObject $obj)
-    {
-        $gridOptions = $this->getObjectGridOptions($obj);
-        $configKey = $this->getGridConfigKey($gridOptions);
-        $gridOptions = array_merge($this->getDefaultOptions($obj, $configKey), $gridOptions);
-        return $gridOptions;
-    }
 
     /**
      * get grid options from object. They are preffered over config
@@ -148,24 +144,35 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
      */
     private function getObjectGridOptions(GridObject $obj)
     {
-        $gridOptions = [];
-        $options = $obj->getOptions();
-        if (array_key_exists('gridOptions', $options)) {
-            $gridOptions = $options['gridOptions'];
+        if (($gridOptions = $obj->getOption('gridOptions')) == null) {
+            return [];
         }
         return $gridOptions;
     }
 
     /**
-     * Get configuration section key for current grid
-     * @param array $gridOptions
-     * @return string
+     * get grid methods from object. They are preffered over methods from config
+     * @param GridObject $obj
+     * @return array|mixed|null
      */
-    private function getGridConfigKey(array $gridOptions)
+    private function getObjectGridMethods(GridObject $obj)
     {
-        $configKey = (array_key_exists('configKey', $gridOptions)) ? $gridOptions['configKey'] : 'default';
-        return $configKey;
+        if (($gridMethods = $obj->getOption('gridMethods')) == null) {
+            return [];
+        }
+        return $gridMethods;
     }
+
+//    /**
+//     * Get configuration section name for current grid
+//     * @param array $gridOptions
+//     * @return string
+//     */
+//    private function getGridConfigName(array $gridOptions)
+//    {
+//        $configName = (array_key_exists('configName', $gridOptions)) ? $gridOptions['configName'] : $this->getConfigName();
+//        return $configName;
+//    }
 
     private function getColModel(GridObject $obj)
     {
@@ -238,14 +245,10 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
 
         /** @var \Callable $subgridHelper */
         $subgridHelper = $this->getSubgridHelper($subgridObj);
-
-        //FIXME каша с передачей опций. Они должны разыскиваться объектом самостоятельно
         $result = $subgridHelper(
             $subgridObj,
             [
                 'configName' => 'subgrid',
-//                'subgrid' => true,
-//                'template' => 'grid/subgrid'
             ]
         );
 
@@ -284,9 +287,11 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
     }
 
     /**
-     * @return array|null
+     * get key from global configuration
+     * @param $key
+     * @return mixed|null
      */
-    protected function getConfig($key)
+    protected function getConfigKey($key)
     {
         if (array_key_exists($key, $this->config) == false) {
             return null;
@@ -301,25 +306,17 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
      */
     protected function getCurrentConfigKey($key)
     {
-        $curConfig = $this->getConfig($this->getConfigName());
+        $configName = $this->getConfigName();
+        $curConfig = $this->getConfigKey($configName);
+        if ($curConfig == null) {
+            throw new Exception\InvalidArgumentException('missing "'.$configName.'" section in JqGridBackend configuration');
+        }
         if (array_key_exists($key, $curConfig) == false) {
             return null;
         }
 
         return $curConfig[$key];
     }
-
-//    /**
-//     * @return \Zend\ServiceManager\ServiceLocatorInterface
-//     */
-//    protected function getParentServiceLocator()
-//    {
-//        $sm = $this->getServiceLocator();
-//        if ($sm instanceof AbstractPluginManager) {
-//            $sm = $sm->getServiceLocator();
-//        }
-//        return $sm;
-//    }
 
     /**
      * get helper for subgrid rendering
@@ -328,7 +325,7 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
      */
     protected function getSubgridHelper($subgridObj)
     {
-        if (($config = $this->getConfig('subgridMap')) == false) {
+        if (($config = $this->getConfigKey('subgridMap')) == false) {
             throw new Exception\InvalidArgumentException('missing "subgridMap" section in JqGridBackend configuration');
         }
         $subgridHelperClass = null;
@@ -400,6 +397,58 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
     public function setConfigName($configName)
     {
         $this->configName = $configName;
+        return $this;
+    }
+
+    /**
+     * akkumulate grid options in member gridOptions
+     * @param GridObject $obj
+     */
+    private function setGridOptions(GridObject $obj)
+    {
+        $gridOptions = $this->getObjectGridOptions($obj);
+        $configName = $this->getConfigName();
+        $defaultOptions = $this->getDefaultOptions($obj, $configName);
+        $this->gridOptions = array_merge($defaultOptions, $gridOptions);
+    }
+
+    /**
+     * return merge the default and user options for grid
+     * @return array
+     */
+    public function getGridOptions()
+    {
+        return $this->gridOptions;
+    }
+
+    private function setGridMethods(GridObject $obj)
+    {
+        $gridMethods = $this->getObjectGridMethods($obj);
+        $configName = $this->getConfigName();
+        $defaultMethods = $this->getDefaultMethods($configName);
+        $this->gridMethods = array_merge($defaultMethods, $gridMethods);
+    }
+
+    public function getGridMethods()
+    {
+        return $this->gridMethods;
+    }
+
+    /**
+     * @return GridObject
+     */
+    public function getObj()
+    {
+        return $this->obj;
+    }
+
+    /**
+     * @param GridObject $obj
+     * @return self
+     */
+    public function setObj($obj)
+    {
+        $this->obj = $obj;
         return $this;
     }
 

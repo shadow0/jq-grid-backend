@@ -12,7 +12,7 @@ use Zend\Json\Json;
 $grid = $this->grid;
 $gridName = 'Grid' . $grid->getName();
 $gridObject = $this->object;
-$gridOptions = $grid->getGridOptions($gridObject);
+$gridOptions = $grid->getGridOptions();
 if (array_key_exists('pager', $gridOptions)) {
     $pagerId = strval($gridOptions['pager']);
 } else {
@@ -32,14 +32,11 @@ if (array_key_exists('pager', $gridOptions)) {
                 $gridName, $gridName
             );
             //сюда внутренние атрибуты
-            echo Json::encode($grid->getBody($gridObject), false, [ 'enableJsonExprFinder'=>true, 'prettyPrint'=>true ]);
+            echo Json::encode($grid->getBody(), false, [ 'enableJsonExprFinder'=>true, 'prettyPrint'=>true ]);
 
             printf(");\n");
 
-            //сюда внешние атрибуты
-            //echo 'gridTTT.jqGrid("filterToolbar", {"searchOnEnter":true,"enableClear":false} );';
-
-            foreach ($grid->getGridMethods($gridObject) as $methodData) {
+            foreach ($grid->getGridMethods() as $methodData) {
                 $str = '';
                 foreach($methodData as $arg) {
                     if ($str != '') {

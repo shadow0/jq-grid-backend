@@ -98,13 +98,13 @@ return array(
                 'caption' =>  'Тестовый грид'
             ],
             'methods' => [
-                'filterToolbar' =>  [
-                    'filterToolbar',
-                    [
-                        "searchOnEnter" => true,
-                        "enableClear" => false
-                    ]
-                ],
+//                'filterToolbar' =>  [
+//                    'filterToolbar',
+//                    [
+//                        "searchOnEnter" => true,
+//                        "enableClear" => false
+//                    ]
+//                ],
             ]
         ],
     ],
