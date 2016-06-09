@@ -1,0 +1,21 @@
+{
+  "name": "kota-shade/jq-grid-backend",
+  "description": "Jqgrid backend module for ZF2",
+  "require": {
+    "php": ">=5.5",
+    "zendframework/zend-json": ">=2.4",
+    "zendframework/zend-form": ">=2.4",
+    "zendframework/zend-servicemanager": ">=2.4",
+    "zendframework/zend-view": ">=2.4"
+  },
+  "repositories":[
+  ],
+  "autoload": {
+    "psr-4": {
+      "JqGridBackend\\": "src/"
+    },
+    "classmap": [
+      "./Module.php"
+    ]
+  }
+}

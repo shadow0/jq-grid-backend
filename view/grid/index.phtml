@@ -1,0 +1,57 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: kota
+ * Date: 19.04.16
+ * Time: 2:00
+ */
+use JqGridBackend\Grid\View\Helper\Grid as GridHelper;
+use Zend\Json\Json;
+
+/** @var GridHelper $grid */
+$grid = $this->grid;
+$gridName = 'Grid' . $grid->getName();
+$gridObject = $this->object;
+$gridOptions = $grid->getGridOptions();
+if (array_key_exists('pager', $gridOptions)) {
+    $pagerId = strval($gridOptions['pager']);
+} else {
+    $pagerId = 'undefined';
+}
+?>
+<table id="<?php echo $gridName; ?>"></table>
+<!--div id="Pager-<?php echo $gridName; ?>"></div -->
+<script>
+    $(document).ready(function() {
+        var grid_pager_id = <?php echo $pagerId ?>;
+        if (grid_pager_id != undefined) {
+            jQuery("table#<?php echo $gridName; ?>").after("<div id=\'" + grid_pager_id + "\'></div>");
+        }
+        <?php
+            printf("var %s = jQuery('#%s').jqGrid(\n",
+                $gridName, $gridName
+            );
+            //сюда внутренние атрибуты
+            echo Json::encode($grid->getBody(), false, [ 'enableJsonExprFinder'=>true, 'prettyPrint'=>true ]);
+
+            printf(");\n");
+
+            foreach ($grid->getGridMethods() as $methodData) {
+                $str = '';
+                foreach($methodData as $arg) {
+                    if ($str != '') {
+                        $str .= ', ';
+                    }
+                    $str .= json_encode($arg);
+                }
+                if ($str != '') {
+                    $str = $gridName . '.jqGrid('. $str . ");\n";
+                    echo $str;
+                }
+            }
+        ?>
+    });
+</script>
+
+<?php
+//echo $this->jsConvert('LLL');
