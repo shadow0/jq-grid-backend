@@ -81,7 +81,8 @@ return array(
                     'filterToolbar',
                     [
                         "searchOnEnter" => true,
-                        "enableClear" => false
+                        "stringResult" => true,
+                        "groupOp" => 'AND'
                     ]
                 ]
             ]
@@ -102,7 +103,6 @@ return array(
 //                    'filterToolbar',
 //                    [
 //                        "searchOnEnter" => true,
-//                        "enableClear" => false
 //                    ]
 //                ],
             ]
