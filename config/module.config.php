@@ -82,7 +82,8 @@ return array(
                     [
                         "searchOnEnter" => true,
                         "stringResult" => true,
-                        "groupOp" => 'AND'
+                        "groupOp" => 'AND',
+                        "searchOperators" => true,
                     ]
                 ]
             ]
