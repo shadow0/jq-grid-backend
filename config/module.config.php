@@ -74,8 +74,8 @@ return array(
             ],
             'methods' => [
                 /**
-                 * key - method name,
-                 * value - array of parameters (will be transformed to json)
+                 * arr[0] - method name,
+                 * arr[1...n] - array of parameters (each will be transformed to json)
                  */
                 'filterToolbar' =>  [
                     'filterToolbar',
@@ -107,6 +107,7 @@ return array(
 //                ],
             ]
         ],
+
     ],
 	'service_manager' => [
         'invokables' => [
