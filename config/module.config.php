@@ -68,7 +68,7 @@ return array(
                 'rowList' => [10,20,30],
                 'pager' => new Grid\GridPagerId('GridPager-'),
                 'viewrecords' => true,
-                'caption' =>  'Тестовый грид',
+                'caption' =>  null,
 
 
             ],
@@ -97,7 +97,7 @@ return array(
                 'rowList' => [10,20,30],
                 'pager' => new Grid\SubgridPagerId('GridPager-'),
                 'viewrecords' => true,
-                'caption' =>  'Тестовый грид'
+                'caption' =>  null
             ],
             'methods' => [
 //                'filterToolbar' =>  [

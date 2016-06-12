@@ -14,8 +14,6 @@ use JqGridBackend\Grid\View\Helper\ColModel as ColModel;
 //use JqGridBackend\Grid\View\Helper\ColModel\TextAdapter;
 //use JqGridBackend\Grid\View\Helper\ColModel\SelectAdapter;
 use Zend\ServiceManager\ServiceLocatorInterface;
-//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactory;
-//use JqGridBackend\Grid\View\Helper\ColModel\ColModelAdapterFactoryInterface;
 use JqGridBackend\Exception\InvalidArgumentException;
 use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManagerInterface;
 use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManager;
@@ -48,20 +46,6 @@ class Module implements
 	public function getServiceConfig() {
 		return [
 			'factories' => [
-                ColModelAdapterFactoryInterface::class => function($serviceManager) {
-                    $config = $serviceManager->get('config');
-                    if (array_key_exists('JqGridBackend', $config) == false) {
-                        throw new InvalidArgumentException('missing config section JqGridBackend');
-                    }
-                    $ret = new ColModelAdapterFactory($serviceManager, $config['JqGridBackend']);
-                    return $ret;
-                },
-                ColModel\TextAdapter::class => function ($serviceManager) {
-                    return new ColModel\TextAdapter();
-                },
-                ColModel\SelectAdapter::class => function ($serviceManager) {
-                    return new ColModel\SelectAdapter();
-                },
             ]
 		];
 	}
