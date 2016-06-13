@@ -45,18 +45,15 @@ return array(
     'JqGridBackend' => [
         'adapterMap' => [
             /**
-             * map from element class-name to adapter class-name.
-             * There will be compare if form element class is_a() map-key, and will take
-             * the last from the successfull comparison
+             * Adapter converts element to javascript code for grid.
+             * Element is compared with key on "instanceof"
              */
             FormElement\Text::class => ColModel\TextAdapter::class,
             FormElement\Select::class => ColModel\SelectAdapter::class,
         ],
         'subgridMap' => [
-            /**
-             * what  helper use for subgrid
-             */
-            FieldsetInterface::class => Grid::class
+            /** If we use subgrid describe helpers to convert object to subgrid */
+            FieldsetInterface::class => Grid::class,
         ],
         'default' => [
             'template' => 'grid/index',
