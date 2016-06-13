@@ -38,8 +38,8 @@
 Например параметр pager, который зависит от имени формы для обеспечения уникальности.
 Для генерации такого параметра необходимо использовать класс, пронаследованный от \Zend\Json\Expr.
 Модуль имеет уже 2 таких класса:
-- JqGridBackend\Grid\View\Helper\Grid\GridPagerId
-- JqGridBackend\Grid\View\Helper\Grid\SubgridPagerId
+1. JqGridBackend\Grid\View\Helper\Grid\GridPagerId
+2. JqGridBackend\Grid\View\Helper\Grid\SubgridPagerId
 Пример:
 ```php
 'default_1' => [
