@@ -55,17 +55,37 @@ return array(
             /** If we use subgrid describe helpers to convert object to subgrid */
             FieldsetInterface::class => Grid::class,
         ],
+        'simple' => [
+            'template' => 'grid/index',
+            'options' => [
+                'url' => null,
+                'datatype' => 'json',
+                'multiSort' => true,
+            ],
+            'methods' => [
+            ]
+        ],
         'default' => [
             'template' => 'grid/index',
             'options' => [
                 'url' => null,
                 'datatype' => 'json',
                 'multiSort' => true,
-                'rowNum' => 10,
-                'rowList' => [10,20,30],
-                'pager' => new Grid\GridPagerId('GridPager-'),
-                'viewrecords' => true,
-                'caption' =>  null,
+            ],
+            'methods' => [
+            ]
+        ],
+        'default_1' => [
+            'template' => 'grid/index',
+            'options' => [
+                'url' => null,
+                'datatype' => 'json',
+                'multiSort' => true,
+//                'pager' => new Grid\GridPagerId('GridPager-'),
+//                'rowNum' => 10,
+//                'rowList' => [10,20,30],
+//                'viewrecords' => true,
+//                'caption' =>  null,
 
 
             ],
@@ -74,15 +94,16 @@ return array(
                  * arr[0] - method name,
                  * arr[1...n] - array of parameters (each will be transformed to json)
                  */
-                'filterToolbar' =>  [
-                    'filterToolbar',
-                    [
-                        "searchOnEnter" => true,
-                        "stringResult" => true,
-                        "groupOp" => 'AND',
-                        "searchOperators" => true,
-                    ]
-                ]
+                'filterToolbar' => null,
+//                [
+//                    'filterToolbar',
+//                    [
+//                        "searchOnEnter" => true,
+//                        "stringResult" => true,
+//                        "groupOp" => 'AND',
+//                        "searchOperators" => true,
+//                    ]
+//                ]
             ]
         ],
         'subgrid' => [

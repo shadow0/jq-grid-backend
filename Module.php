@@ -5,14 +5,8 @@ use Zend\ModuleManager\ModuleManager;
 use Zend\ModuleManager\ModuleManagerInterface;
 use Zend\ModuleManager\Listener\ServiceListenerInterface;
 use Zend\ModuleManager\Feature;
-//use Zend\ModuleManager\Feature\AutoloaderProviderInterface;
-//use Zend\ModuleManager\Feature\ConfigProviderInterface;
-//use Zend\ModuleManager\Feature\InitProviderInterface;
 use JqGridBackend\Grid\View\Helper\Grid as GridHelper;
 use JqGridBackend\Grid\View\Helper\ColModel as ColModel;
-
-//use JqGridBackend\Grid\View\Helper\ColModel\TextAdapter;
-//use JqGridBackend\Grid\View\Helper\ColModel\SelectAdapter;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use JqGridBackend\Exception\InvalidArgumentException;
 use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManagerInterface;
