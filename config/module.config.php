@@ -111,9 +111,11 @@ return array(
 
     ],
 	'service_manager' => [
-        'invokables' => [
-            ColModelAdapterPluginManagerInterface::class => ColModelAdapterPluginManager::class
-        ]
+        'factories' => [
+            ColModelAdapterPluginManagerInterface::class => function ($serviceManager) {
+                return new ColModelAdapterPluginManager($serviceManager);
+            }
+        ],
     ],
     'jqgrid_adapter_manager' => [
         'invokables' => [
