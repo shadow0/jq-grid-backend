@@ -72,38 +72,32 @@ return array(
                 'datatype' => 'json',
                 'multiSort' => true,
             ],
-            'methods' => [
-            ]
+            'methods' => []
         ],
-        'default_1' => [
+        'pagerFilter' => [
             'template' => 'grid/index',
             'options' => [
                 'url' => null,
                 'datatype' => 'json',
                 'multiSort' => true,
-//                'pager' => new Grid\GridPagerId('GridPager-'),
-//                'rowNum' => 10,
-//                'rowList' => [10,20,30],
-//                'viewrecords' => true,
-//                'caption' =>  null,
-
-
+                'pager' => new Grid\GridPagerId('GridPager-'),
+                'rowNum' => 10,
+                'viewrecords' => true,
             ],
             'methods' => [
                 /**
                  * arr[0] - method name,
                  * arr[1...n] - array of parameters (each will be transformed to json)
                  */
-                'filterToolbar' => null,
-//                [
-//                    'filterToolbar',
-//                    [
-//                        "searchOnEnter" => true,
-//                        "stringResult" => true,
-//                        "groupOp" => 'AND',
-//                        "searchOperators" => true,
-//                    ]
-//                ]
+                'method_1' => [
+                    'filterToolbar',
+                    [
+                        "searchOnEnter" => true,
+                        "stringResult" => true,
+                        "groupOp" => 'AND',
+                        "searchOperators" => true,
+                    ]
+                ]
             ]
         ],
         'subgrid' => [
@@ -111,20 +105,8 @@ return array(
             'options' => [
                 'datatype' => 'json',
                 'multiSort' => true,
-                'rowNum' => 20,
-                'rowList' => [10,20,30],
-                'pager' => new Grid\SubgridPagerId('GridPager-'),
-                'viewrecords' => true,
-                'caption' =>  null
             ],
-            'methods' => [
-//                'filterToolbar' =>  [
-//                    'filterToolbar',
-//                    [
-//                        "searchOnEnter" => true,
-//                    ]
-//                ],
-            ]
+            'methods' => []
         ],
 
     ],
