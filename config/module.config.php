@@ -45,18 +45,25 @@ return array(
     'JqGridBackend' => [
         'adapterMap' => [
             /**
-             * map from element class-name to adapter class-name.
-             * There will be compare if form element class is_a() map-key, and will take
-             * the last from the successfull comparison
+             * Adapter converts element to javascript code for grid.
+             * Element is compared with key on "instanceof"
              */
             FormElement\Text::class => ColModel\TextAdapter::class,
             FormElement\Select::class => ColModel\SelectAdapter::class,
         ],
         'subgridMap' => [
-            /**
-             * what  helper use for subgrid
-             */
-            FieldsetInterface::class => Grid::class
+            /** If we use subgrid describe helpers to convert object to subgrid */
+            FieldsetInterface::class => Grid::class,
+        ],
+        'simple' => [
+            'template' => 'grid/index',
+            'options' => [
+                'url' => null,
+                'datatype' => 'json',
+                'multiSort' => true,
+            ],
+            'methods' => [
+            ]
         ],
         'default' => [
             'template' => 'grid/index',
@@ -64,25 +71,31 @@ return array(
                 'url' => null,
                 'datatype' => 'json',
                 'multiSort' => true,
-                'rowNum' => 10,
-                'rowList' => [10,20,30],
+            ],
+            'methods' => []
+        ],
+        'pagerFilter' => [
+            'template' => 'grid/index',
+            'options' => [
+                'url' => null,
+                'datatype' => 'json',
+                'multiSort' => true,
                 'pager' => new Grid\GridPagerId('GridPager-'),
+                'rowNum' => 10,
                 'viewrecords' => true,
-                'caption' =>  'Тестовый грид',
-
-
             ],
             'methods' => [
                 /**
                  * arr[0] - method name,
                  * arr[1...n] - array of parameters (each will be transformed to json)
                  */
-                'filterToolbar' =>  [
+                'method_1' => [
                     'filterToolbar',
                     [
                         "searchOnEnter" => true,
                         "stringResult" => true,
-                        "groupOp" => 'AND'
+                        "groupOp" => 'AND',
+                        "searchOperators" => true,
                     ]
                 ]
             ]
@@ -92,20 +105,8 @@ return array(
             'options' => [
                 'datatype' => 'json',
                 'multiSort' => true,
-                'rowNum' => 20,
-                'rowList' => [10,20,30],
-                'pager' => new Grid\SubgridPagerId('GridPager-'),
-                'viewrecords' => true,
-                'caption' =>  'Тестовый грид'
             ],
-            'methods' => [
-//                'filterToolbar' =>  [
-//                    'filterToolbar',
-//                    [
-//                        "searchOnEnter" => true,
-//                    ]
-//                ],
-            ]
+            'methods' => []
         ],
 
     ],
