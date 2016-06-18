@@ -25,7 +25,7 @@ return array(
                     throw new \InvalidArgumentException('missing config section JqGridBackend');
                 }
                 $colModelPM = $parentServiceLocator->get(ColModelAdapterPluginManagerInterface::class);
-                return new Grid($colModelPM, $config[$configKey]);
+                return new Grid($serviceManager, $colModelPM, $config[$configKey]);
             }
         ],
         'shared' => [

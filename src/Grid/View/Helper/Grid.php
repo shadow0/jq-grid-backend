@@ -9,8 +9,6 @@
 namespace JqGridBackend\Grid\View\Helper;
 
 use JqGridBackend\Form\SubgridInterface;
-use Zend\ServiceManager\ServiceLocatorAwareInterface;
-use Zend\ServiceManager\ServiceLocatorAwareTrait;
 use Zend\View\Helper\AbstractHelper;
 use Zend\Form\FieldsetInterface as GridObject;
 use Zend\ServiceManager\AbstractPluginManager;
@@ -23,9 +21,10 @@ use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\Form\Element as FormElement;
 
-class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
+class Grid extends AbstractHelper
 {
-    use ServiceLocatorAwareTrait;
+    /** @var  AbstractPluginManager */
+    protected $pluginManager;
 
     /**
      * @var array
@@ -66,10 +65,11 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
      */
     protected $colModelAdapterPluginManager;
 
-    public function __construct($colModelAdapterPluginManager, $config)
+    public function __construct(AbstractPluginManager $pluginManager, $colModelAdapterPluginManager, $config)
     {
-        $this->config = $config;
+        $this->setPluginManager($pluginManager);
         $this->setColModelAdapterPluginManager($colModelAdapterPluginManager);
+        $this->config = $config;
         $this->adapterMapConfig = $this->getConfigKey('adapterMap');
     }
 
@@ -194,7 +194,7 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
     {
         /** @var string $adapterName */
         $adapterName = $this->getAdapterName($column);
-        /** @var ColModelAdapterPluginManagerInterface $adapterPM */
+        /** @var AbstractPluginManager $adapterPM */
         $adapterPM = $this->getColModelAdapterPluginManager();
         /** @var ColModel\ColModelAdapter $colModelAdapter */
         $colModelAdapter = $adapterPM->get($adapterName);
@@ -338,8 +338,8 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
             throw new Exception\InvalidArgumentException('need subgrid helper in "subgridMap" section in JqGridBackend configuration');
         }
 
-        //$sm = $this->getParentServiceLocator();
-        $sm = $this->getServiceLocator();
+        /** @var AbstractPluginManager $sm */
+        $sm = $this->getPluginManager();
         /** @var AbstractHelper $subgridHelper */
         $subgridHelper = $sm->get($subgridHelperClass);
         return $subgridHelper;
@@ -452,5 +452,21 @@ class Grid extends AbstractHelper implements ServiceLocatorAwareInterface
         return $this;
     }
 
+    /**
+     * @return AbstractPluginManager
+     */
+    public function getPluginManager()
+    {
+        return $this->pluginManager;
+    }
 
+    /**
+     * @param AbstractPluginManager $pluginManager
+     * @return self
+     */
+    public function setPluginManager($pluginManager)
+    {
+        $this->pluginManager = $pluginManager;
+        return $this;
+    }
 }
