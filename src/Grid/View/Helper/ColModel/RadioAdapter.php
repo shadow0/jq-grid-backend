@@ -10,7 +10,7 @@ namespace JqGridBackend\Grid\View\Helper\ColModel;
 
 use Zend\Form\Element;
 
-class SelectAdapter extends ColModelAdapter {
+class RadioAdapter extends ColModelAdapter {
 
     public function __construct()
     {

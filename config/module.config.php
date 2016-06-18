@@ -50,6 +50,7 @@ return array(
              */
             FormElement\Text::class => ColModel\TextAdapter::class,
             FormElement\Select::class => ColModel\SelectAdapter::class,
+            FormElement\Radio::class => ColModel\RadioAdapter::class,
         ],
         'subgridMap' => [
             /** If we use subgrid describe helpers to convert object to subgrid */
