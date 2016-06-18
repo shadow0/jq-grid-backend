@@ -17,12 +17,11 @@ class SelectAdapter extends ColModelAdapter {
         $this->type = 'select';
     }
 
-    protected function getAttributes(Element $column)
+    protected function getSpecialAttributes(Element $column)
     {
         /** @var Element\Select $column */
         $valueOptions = (object) $column->getValueOptions();
-        $res = parent::getAttributes($column);
-        $res = array_merge($res, [
+        $res = [
             'formatter' => 'select',
             'searchoptions' => [
                 'value' => $valueOptions,
@@ -31,10 +30,7 @@ class SelectAdapter extends ColModelAdapter {
             'editoptions' => [
                 'value' => $valueOptions
             ]
-        ]);
-        if ($gridOptions = $column->getOption('grid')) {
-            $res = array_replace_recursive($res, $gridOptions);
-        }
+        ];
         return $res;
     }
 

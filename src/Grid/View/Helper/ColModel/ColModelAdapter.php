@@ -40,13 +40,30 @@ abstract class ColModelAdapter
         }
         $type = $this->getType();
 
-        return [
+        $ret = [
             'name' => $name,
             'index' => $name,
             'label' => $label,
             'stype' => $type,
             'edittype' => $type,
         ];
+
+        if (is_array($resSpecial = $this->getSpecialAttributes($column))) {
+            $ret = array_replace_recursive($ret, $resSpecial);
+        }
+        if ($gridOptions = $column->getOption('grid')) {
+            $ret = array_replace_recursive($ret, $gridOptions);
+        }
+        return $ret;
+    }
+
+    /**
+     * @param Element $column
+     * @return array
+     */
+    protected function getSpecialAttributes(Element $column)
+    {
+        return [];
     }
 
     /**
@@ -56,5 +73,4 @@ abstract class ColModelAdapter
     {
         return $this->type;
     }
-
 }

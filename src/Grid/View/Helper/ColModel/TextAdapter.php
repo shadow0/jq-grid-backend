@@ -17,13 +17,14 @@ class TextAdapter extends ColModelAdapter {
         $this->type = 'text';
     }
 
-    protected function getAttributes(Element $column)
+    protected function getSpecialAttributes(Element $column)
     {
-        $res = parent::getAttributes($column);
-        if ($gridOptions = $column->getOption('grid')) {
-            $res = array_replace_recursive($res, $gridOptions);
-        }
+        $res = [
+            'searchoptions' => [
+                'sopt' => new Sopt(['eq','ne','lt','le','gt','ge','bw','bn','in','ni','ew','en','cn','nc'],
+                    \ArrayObject::STD_PROP_LIST),
+            ],
+        ];
         return $res;
     }
-
 }

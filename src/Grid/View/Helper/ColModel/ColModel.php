@@ -44,6 +44,9 @@ class ColModel implements \JsonSerializable
             if ($v === null) {
                 unset($ret[$k]);
             }
+            elseif ($v instanceof \JsonSerializable) {
+                $ret[$k] = $v->jsonSerialize();
+            }
         }
         return $ret;
     }
