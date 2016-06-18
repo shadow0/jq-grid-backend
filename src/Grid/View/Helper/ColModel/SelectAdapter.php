@@ -20,15 +20,20 @@ class SelectAdapter extends ColModelAdapter {
     protected function getAttributes(Element $column)
     {
         /** @var Element\Select $column */
-        $valueOptions = $column->getValueOptions();
+        $valueOptions = (object) $column->getValueOptions();
         $res = parent::getAttributes($column);
         $res = array_merge($res, [
             'formatter' => 'select',
-            'searchoptions' => $valueOptions,
-            'editoptions' => $valueOptions
+            'searchoptions' => [
+                'value' => $valueOptions,
+                'sopt' => ['eq','ne'],
+            ],
+            'editoptions' => [
+                'value' => $valueOptions
+            ]
         ]);
         if ($gridOptions = $column->getOption('grid')) {
-            $res = array_merge($res, $gridOptions);
+            $res = array_replace_recursive($res, $gridOptions);
         }
         return $res;
     }

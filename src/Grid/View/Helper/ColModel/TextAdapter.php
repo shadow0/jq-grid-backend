@@ -21,7 +21,7 @@ class TextAdapter extends ColModelAdapter {
     {
         $res = parent::getAttributes($column);
         if ($gridOptions = $column->getOption('grid')) {
-            $res = array_merge($res, $gridOptions);
+            $res = array_replace_recursive($res, $gridOptions);
         }
         return $res;
     }
