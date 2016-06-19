@@ -25,7 +25,6 @@ class GridPagerId extends Expr implements GridObjectAwareInterface
         if (($object = $this->getGridObject()) != false) {
             $ret .= $object->getName();
         }
-        return sprintf("\"%s\"", $ret);
+        return sprintf("\"#%s\"", $ret);
     }
-
 }

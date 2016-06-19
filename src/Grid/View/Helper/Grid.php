@@ -220,14 +220,25 @@ class Grid extends AbstractHelper
         return $ret;
     }
 
-    private function getDefaultMethods($methodsKey = 'default')
+    private function getDefaultMethods(GridObject $obj, $methodsKey = 'default')
     {
         //TODO валидаторы на методы
         $config = $this->getCurrentConfigKey('methods');
         if (is_array($config) == false) {
             throw new Exception\InvalidArgumentException('missing "methods" in '.$methodsKey.' configuration for JqGridBackend');
         }
-        return $config;
+        $ret = [];
+        foreach ($config as $k => $v) {
+            if (is_array($v) && count($v)>0) {
+                $name = array_shift($v);
+                $v = new Grid\Method($name, $v);
+            }
+            if ($v instanceof GridObjectAwareInterface) {
+                $v->setGridObject($obj);
+            }
+            $ret[$k] = $v;
+        }
+        return $ret;
     }
 
     protected function getSubgridOptions($obj)
@@ -425,7 +436,7 @@ class Grid extends AbstractHelper
     {
         $gridMethods = $this->getObjectGridMethods($obj);
         $configName = $this->getConfigName();
-        $defaultMethods = $this->getDefaultMethods($configName);
+        $defaultMethods = $this->getDefaultMethods($obj, $configName);
         $this->gridMethods = array_merge($defaultMethods, $gridMethods);
     }
 
