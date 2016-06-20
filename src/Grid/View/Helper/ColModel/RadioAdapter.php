@@ -10,28 +10,6 @@ namespace JqGridBackend\Grid\View\Helper\ColModel;
 
 use Zend\Form\Element;
 
-class RadioAdapter extends ColModelAdapter {
-
-    public function __construct()
-    {
-        $this->type = 'select';
-    }
-
-    protected function getSpecialAttributes(Element $column)
-    {
-        /** @var Element\Select $column */
-        $valueOptions = (object) $column->getValueOptions();
-        $res = [
-            'formatter' => 'select',
-            'searchoptions' => [
-                'value' => $valueOptions,
-                'sopt' => ['eq','ne'],
-            ],
-            'editoptions' => [
-                'value' => $valueOptions
-            ]
-        ];
-        return $res;
-    }
-
+class RadioAdapter extends SelectAdapter
+{
 }
