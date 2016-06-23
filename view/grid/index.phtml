@@ -14,7 +14,7 @@ $gridName = 'Grid' . $grid->getName();
 $gridObject = $this->object;
 $gridOptions = $grid->getGridOptions();
 if (array_key_exists('pager', $gridOptions)) {
-    $pagerId = strval($gridOptions['pager']);
+    $pagerId = str_replace('#', '', strval($gridOptions['pager']));
 } else {
     $pagerId = 'undefined';
 }
@@ -37,12 +37,7 @@ if (array_key_exists('pager', $gridOptions)) {
 
             foreach ($grid->getGridMethods() as $methodData) {
                 $str = '';
-                foreach($methodData as $arg) {
-                    if ($str != '') {
-                        $str .= ', ';
-                    }
-                    $str .= json_encode($arg);
-                }
+                $str .= Json::encode($methodData, false, [ 'enableJsonExprFinder'=>true ]);
                 if ($str != '') {
                     $str = $gridName . '.jqGrid('. $str . ");\n";
                     echo $str;
@@ -51,6 +46,3 @@ if (array_key_exists('pager', $gridOptions)) {
         ?>
     });
 </script>
-
-<?php
-//echo $this->jsConvert('LLL');

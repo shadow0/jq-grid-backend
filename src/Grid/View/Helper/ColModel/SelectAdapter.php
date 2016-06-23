@@ -12,28 +12,48 @@ use Zend\Form\Element;
 
 class SelectAdapter extends ColModelAdapter {
 
+    private $emptyPair = ['__empty__' => ''];
+
     public function __construct()
     {
         $this->type = 'select';
     }
 
-    protected function getAttributes(Element $column)
+    protected function getSpecialAttributes(Element $column)
     {
         /** @var Element\Select $column */
-        $valueOptions = $column->getValueOptions();
-        $res = parent::getAttributes($column);
-        $res = array_merge($res, [
+        $valueOptions =  $column->getValueOptions();
+        $searchOptions = array_merge($this->getEmptyPair(), $valueOptions);
+        $res = [
             'formatter' => 'select',
-            'searchoptions' => $valueOptions,
-            'editoptions' => $valueOptions
-//            'searchoptions' => [
-//                'value' => (object) $valueOptions
-//            ]
-        ]);
-        if ($gridOptions = $column->getOption('grid')) {
-            $res = array_merge($res, $gridOptions);
-        }
+            'searchoptions' => [
+                'value' => (object) $searchOptions,
+                'sopt' => ['eq','ne'],
+            ],
+            'editoptions' => [
+                'value' => (object)$valueOptions
+            ]
+        ];
         return $res;
     }
+
+    /**
+     * @return array
+     */
+    public function getEmptyPair()
+    {
+        return $this->emptyPair;
+    }
+
+    /**
+     * @param array $emptyPair
+     * @return self
+     */
+    public function setEmptyPair(array $emptyPair)
+    {
+        $this->emptyPair = $emptyPair;
+        return $this;
+    }
+
 
 }

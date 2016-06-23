@@ -13,17 +13,4 @@ use JqGridBackend\Exception as JqGridBackendException;
 
 interface ColModelAdapterPluginManagerInterface
 {
-//    /**
-//     * @param FormElement $element
-//     * @return ColModel\ColModelAdapter
-//     * @thrown Exception\OutOfBoundsException
-//     */
-//    public function getAdapter(FormElement $element);
-//
-//    /**
-//     * @param FormElement $element
-//     * @return string
-//     * @thrown Exception\OutOfBoundsException
-//     */
-//    public function getAdapterName(FormElement $element);
 }

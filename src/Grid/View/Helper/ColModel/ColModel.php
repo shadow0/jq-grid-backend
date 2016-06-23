@@ -8,7 +8,7 @@
 
 namespace JqGridBackend\Grid\View\Helper\ColModel;
 
-use Zend\Stdlib\Hydrator\ClassMethods as Hydrator;
+use Zend\Hydrator\ClassMethods as Hydrator;
 
 class ColModel implements \JsonSerializable
 {
@@ -43,6 +43,9 @@ class ColModel implements \JsonSerializable
         foreach ($ret as $k => $v) {
             if ($v === null) {
                 unset($ret[$k]);
+            }
+            elseif ($v instanceof \JsonSerializable) {
+                $ret[$k] = $v->jsonSerialize();
             }
         }
         return $ret;
@@ -321,9 +324,9 @@ class ColModel implements \JsonSerializable
     {
         //TODO переделать на стратегию гидрирования
         if ($options instanceof \Traversable) {
-            $this->editoptions['value'] = $options;
+            $this->editoptions = $options;
         } elseif (is_array($options)) {
-            $this->editoptions['value'] = (object) $options;
+            $this->editoptions = (object) $options;
         }
         return $this;
     }
@@ -649,9 +652,9 @@ class ColModel implements \JsonSerializable
     public function setSearchoptions($options)
     {
         if ($options instanceof \Traversable) {
-            $this->searchoptions['value'] = $options;
+            $this->searchoptions = $options;
         } elseif (is_array($options)) {
-            $this->searchoptions['value'] = (object) $options;
+            $this->searchoptions = (object) $options;
         }
 
         return $this;

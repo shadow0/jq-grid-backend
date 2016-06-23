@@ -12,6 +12,7 @@ use Zend\ServiceManager\AbstractPluginManager;
 use Zend\ServiceManager\Exception;
 use Zend\Form\Element as FormElement;
 use JqGridBackend\Exception as JqGridBackendException;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 class ColModelAdapterPluginManager extends AbstractPluginManager implements ColModelAdapterPluginManagerInterface
 {
@@ -21,53 +22,14 @@ class ColModelAdapterPluginManager extends AbstractPluginManager implements ColM
      */
     protected $adapterMapConfig;
 
-    public function __construct($configOrContainerInstance = null, array $v3config = [])
+    public function __construct(
+        ServiceLocatorInterface $serviceManager,
+        $configOrContainerInstance = null,
+        array $v3config = [])
     {
+        $this->setServiceLocator($serviceManager);
         parent::__construct($configOrContainerInstance, $v3config);
     }
-
-//    /**
-//     * @param FormElement $element
-//     * @return ColModel\ColModelAdapter
-//     * @thrown Exception\OutOfBoundsException
-//     */
-//    public function getAdapter(FormElement $element)
-//    {
-//        $adapterName = $this->getAdapterName($element);
-//        $sm = $this->getServiceLocator();
-//        /** @var ColModel\ColModelAdapter $ret */
-//        $ret = $sm->get($adapterName);
-//        return $ret;
-//    }
-//
-//    /**
-//     * @param FormElement $element
-//     * @return string
-//     * @thrown Exception\OutOfBoundsException
-//     */
-//    public function getAdapterName(FormElement $element)
-//    {
-//        $className = get_class($element);
-//        $alias = null;
-//        foreach ($this->getCanonicalNames() as $name => $cName) {
-//            if (is_a($element, $name) == true) {
-//                $alias = $name;
-//            }
-//        }
-//        if ()
-//
-//
-//        $adapterName = null;
-//        foreach ($this->adapterMapConfig as $k => $v) {
-//            if (is_a($element, $k) == true) {
-//                $adapterName = $v;
-//            }
-//        }
-//        if (!$adapterName) {
-//            throw new JqGridBackendException\OutOfBoundsException("missing ColModelAdapter for class = ". get_class($element));
-//        }
-//        return $adapterName;
-//    }
 
     /**
      * Validate the plugin

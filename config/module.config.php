@@ -5,7 +5,6 @@ use JqGridBackend\Grid\View\Helper\Grid;
 use Zend\Form\Element as FormElement;
 use Zend\Form\FieldsetInterface;
 use JqGridBackend\Grid\View\Helper\ColModel;
-//use JqGridBackend\Grid\View\Helper\Grid\SubgridPagerId;
 
 use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManagerInterface;
 use JqGridBackend\Grid\View\Helper\ColModelAdapterPluginManager;
@@ -25,7 +24,7 @@ return array(
                     throw new \InvalidArgumentException('missing config section JqGridBackend');
                 }
                 $colModelPM = $parentServiceLocator->get(ColModelAdapterPluginManagerInterface::class);
-                return new Grid($colModelPM, $config[$configKey]);
+                return new Grid($serviceManager, $colModelPM, $config[$configKey]);
             }
         ],
         'shared' => [
@@ -50,6 +49,7 @@ return array(
              */
             FormElement\Text::class => ColModel\TextAdapter::class,
             FormElement\Select::class => ColModel\SelectAdapter::class,
+            FormElement\Radio::class => ColModel\RadioAdapter::class,
         ],
         'subgridMap' => [
             /** If we use subgrid describe helpers to convert object to subgrid */
@@ -111,9 +111,11 @@ return array(
 
     ],
 	'service_manager' => [
-        'invokables' => [
-            ColModelAdapterPluginManagerInterface::class => ColModelAdapterPluginManager::class
-        ]
+        'factories' => [
+            ColModelAdapterPluginManagerInterface::class => function ($serviceManager) {
+                return new ColModelAdapterPluginManager($serviceManager);
+            }
+        ],
     ],
     'jqgrid_adapter_manager' => [
         'invokables' => [
