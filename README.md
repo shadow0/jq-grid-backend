@@ -1,4 +1,4 @@
-JqGridBackend
+JqGridBackend [Russian](./README_ru.md)
 =============
 This ZF2 module generate javascript code for visualization tables with help of [jqGrid][] plugin.
 Object of Form or Fieldset class is the source for grid generation.
