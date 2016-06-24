@@ -1,11 +1,11 @@
-Использование pager, особенности генерации скрипта.
-===================================================
+Pager, notes about script generation.
+====================================
 
-Для pager-а в jqGrid необходимо задать селектор div-элемента.
-В модуле данный элемент генерируется динамически и его идентификатор зависит от имени формы.
-Для параметров-объектов класса \Zend\Json\Expr будет вызван метод __toString() в момент генерации скрипта.
-Поэтому для генерации pager-а использован Grid\GridPagerId (наследник Expr).
-Пример конфигурации грида с pager-ом:
+For using jqGrid pager we should set selector of the div element.
+The pager is dynamic element, it generate script which depends of form name.
+That is why we use Grid\GridPagerId, which inherits \Zend\Json\Expr.
+Method __toString() generates pager selector.
+Grid configuration example with pager:
 ```php
         'default_1' => [
             'template' => 'grid/index',
@@ -23,21 +23,20 @@
         ],
 ```
 
-1. pager  => new Grid\GridPagerId('GridPager-'), задает селектор pager-а с префиксом GridPager-.
- Текущий вью-скрипт хелпера обеспечит создание элемента для pager-а с заданным идентификатором
- и сгенерирует javascript-овую часть с таким же селектором для pager-a.
-2. rowNum - задает количество записей по умолчанию
-3. rowList - задает список из которого можно в гриде выбрать по сколько записей выводить на странице
-4. viewrecords если true, то в pager-блоке отражается с какой по какую запись выведено.
+1. pager  => new Grid\GridPagerId('GridPager-'), set pager selector with prefix 'GridPager-'.
+ Current helper view-script create pager DOM element with right identifier and generate javascript with right selector.
+2. rowNum - set the default number of row to show
+3. rowList - set the list for choosing how many rows to show on one page
+4. viewrecords - if true, show additional information about rows range to show.
 
-Подробности этих опций и о других опциях грида можно 
-прочитать [здесь](http://www.trirand.com/jqgridwiki/doku.php?id=wiki:options).
-В случае субгрида для pager используется Grid\SubgridPagerId, по аналогии с использованием Grid\GridPagerId (см. пример
-конфигурации)
+The details about this options you can read [here]
+Подробности этих опций и о других опциях грида можно (http://www.trirand.com/jqgridwiki/doku.php?id=wiki:options).
+If we use pager in subgrid we use Grid\SubgridPagerId instead Grid\GridPagerId (see configuration example).
 
-Особенности генерации скрипта
+Notes about script generation
 -----------------------------
-Для генерации скрипта view helper использует view-скрипт, который задается через конфигурацию параметром template.
-По умолчанию задан 'template' => 'grid/index' для грида, и 'template' => 'grid/subgrid' для субгрида.
-Их должно быть достаточно для большинства случаев. 
+View helper uses view script for javascript generation. This view script is set in configuration on 'template' option.
+The default grid template is 'grid/index'. The default subgrid template is 'grid/subgrid'.
+Usually it will be enough for most cases.
+
 
