@@ -1,11 +1,13 @@
-Введение
-========
-Данный модуль содержит помощник вида (view helper), генерирующий javascript, 
-который использует jqGrid плагин для генерации табличного вида данных на клиентской стороне.
-Для описания грида используются объекты типа Zend\Form\Fieldset.
+Getting Started
+===============
+This module contains the view helper, which generates javascript.
+The javascript uses [jqGrid][] plugin to create dynamic tables in html pages.
+Objects of class Zend\Form\Fieldset or Zend\Form\Form are used for grid declaration.
 
-Простейшее использование выглядит следующим образом.
-Класс формы:
+The simple example
+------------------
+
+Form class:
 ```php
 <?php
 namespace JqgridTest\Form;
@@ -59,7 +61,8 @@ class TestGrid extends Form
 
 }
 ```
-Создаем форму в действии контроллера и передаем во view. Фрагмент action в контроллере:
+Create form in controler action and pass it to the view.
+Fragment of controller action:
 ```php
     $form = new Form\TestGrid('Test');
     $form->setOption(
@@ -73,13 +76,13 @@ class TestGrid extends Form
         'form' => $form,
     ]);
 ```
-gridOptions - параметры для грида отличные от параметров по умолчанию. Т.к. мы предполагаем загрузку данных
-[ajax][] запросом, поэтому единственным обязательным параметром является url.
-Можно передавать любые опции, которые доступны согласно спецификации jqGrid. Посмотреть спецификацию 
-можно [здесь](http://www.trirand.com/jqgridwiki/doku.php?id=wiki:options).
-Например, autowidth=>true позволяет растянуть грид по ширине родительского элемента.
+gridOptions - grid options which are different from default parameters. We will get data from [ajax][] request,
+  that is why the only 'url' is mandatory.
+  We can add any options, which is allowed by [jqGrid][] specification.
+  Look options specification [here](http://www.trirand.com/jqgridwiki/doku.php?id=wiki:options).
+For example autowidth=>true allows to set grid width equals the width of parent DOM element.
 
-Фрагмент view:
+View part:
 ```php
 <link rel="stylesheet" type="text/css" media="screen" href="/css/ui/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="/css/ui/ui.jqgrid.css" />
@@ -89,10 +92,10 @@ gridOptions - параметры для грида отличные от пар�
 <?php
 echo $this->jqGrid($this->form);
 ```
-модуль не содержит [jqGrid] и [jQuery], поэтому внедрить их в проект необходимо самостоятельно.
+The module doesn't include [jqGrid] and [jQuery]. That is why you should install their in your project yourself.
 
-Имя формы будет использовано для имени самого грида.
-В результате  на странице появится следующий фрагмент:
+The form name is used for generation of the grid name.
+As the result we can see that fragment on html page:
 ```javascript
 <link rel="stylesheet" type="text/css" media="screen" href="/css/ui/jquery-ui.css" />
 <link rel="stylesheet" type="text/css" media="screen" href="/css/ui/ui.jqgrid.css" />
